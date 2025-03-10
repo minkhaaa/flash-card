@@ -12,15 +12,15 @@ const firebaseConfig = {
   appId: "1:509760370306:web:87f79fe9b8339dfc7b269b",
 };
 
-// ✅ Initialize Firebase
+//  Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// ✅ Initialize Firebase Auth with Persistent Login
+//  Initialize Firebase Auth with Persistent Login
 const auth = initializeAuth(app, {
   persistence: getReactNativePersistence(AsyncStorage),
 });
 
-// ✅ Initialize Firestore Database
+//  Initialize Firestore Database
 const db = getFirestore(app);
 
 export { auth, db };

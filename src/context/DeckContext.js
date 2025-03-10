@@ -3,34 +3,31 @@ import {
   collection,
   doc,
   getDocs,
+  getDoc,
   setDoc,
   updateDoc,
   deleteDoc,
 } from "firebase/firestore";
-import { db, auth } from "../firebaseConfig"; // ✅ Import Firestore & Auth
+import { db, auth } from "../firebaseConfig"; //  Import Firestore & Auth
 
 const DeckContext = createContext();
 
 export function DeckProvider({ children }) {
   const [decks, setDecks] = useState({});
-  const user = auth.currentUser; // ✅ Get the logged-in user
+  const user = auth.currentUser; //  Get the logged-in user
 
-  // ✅ Debug: Print the logged-in user
-  console.log("👤 Logged-in User:", user ? user.uid : "No user logged in");
+  //  Debug: Print the logged-in user
 
-  // ✅ Function to fetch decks from Firestore
+  //  Function to fetch decks from Firestore
   async function fetchDecks() {
-    const user = auth.currentUser; // ✅ Get the logged-in user
+    const user = auth.currentUser; //  Get the logged-in user
 
     if (!user) {
-      console.log("🚨 No user logged in! Cannot fetch decks.");
       return;
     }
 
     try {
-      console.log(`🔄 Fetching decks for user: ${user.uid}`);
-
-      const userDecksRef = collection(db, "users", user.uid, "decks"); // ✅ Ensure we fetch only this user's decks
+      const userDecksRef = collection(db, "users", user.uid, "decks"); //  Ensure  fetch only this user's decks
       const snapshot = await getDocs(userDecksRef);
       let fetchedDecks = {};
 
@@ -38,51 +35,39 @@ export function DeckProvider({ children }) {
         fetchedDecks[doc.id] = doc.data();
       });
 
-      console.log("🔥 Firestore Decks Fetched:", fetchedDecks); // ✅ Debugging Firestore data
       setDecks(fetchedDecks);
-    } catch (error) {
-      console.error("❌ Firestore Fetch Error:", error); // ✅ Print Firestore errors
-    }
+    } catch (error) {}
   }
 
   useEffect(() => {
-    fetchDecks(); // ✅ Fetch decks when the app starts
+    fetchDecks(); //  Fetch decks when the app starts
   }, [user]);
 
-  // ✅ Add a deck to Firestore
+  //  Add a deck to Firestore
   async function addDeck(title) {
-    const user = auth.currentUser; // ✅ Ensure we get the logged-in user
+    const user = auth.currentUser; //  Ensure  get the logged-in user
     if (!user) {
-      console.log("🚨 No user logged in! Cannot add deck.");
       return;
     }
 
     try {
-      console.log(`➕ Adding deck: ${title} for user: ${user.uid}`);
-
-      // ✅ Store deck inside user-specific path
+      //  Store deck inside user-specific path
       const deckRef = doc(db, "users", user.uid, "decks", title);
       await setDoc(deckRef, { title: title.trim(), questions: [] });
 
-      console.log(`✅ Deck "${title}" added successfully.`);
-      fetchDecks(); // 🔥 Refresh decks from Firestore
-    } catch (error) {
-      console.error("❌ Firestore Add Deck Error:", error);
-    }
+      fetchDecks(); //  Refresh decks from Firestore
+    } catch (error) {}
   }
 
-  // ✅ Add a card to a deck
+  //  Add a card to a deck
   async function addCardToDeck(title, card) {
     const user = auth.currentUser;
     if (!user) {
-      console.log("🚨 No user logged in! Cannot add card.");
       return;
     }
 
     try {
-      console.log(`➕ Adding card to deck: ${title} for user: ${user.uid}`);
-
-      // ✅ Ensure we store cards under the logged-in user's deck
+      //  Ensure  store cards under the logged-in user's deck
       const deckRef = doc(db, "users", user.uid, "decks", title);
       const deckSnapshot = await getDocs(
         collection(db, "users", user.uid, "decks"),
@@ -92,42 +77,60 @@ export function DeckProvider({ children }) {
         ?.data();
 
       if (deckData) {
-        let updatedQuestions = deckData.questions || []; // ✅ Ensure it's an array
+        let updatedQuestions = deckData.questions || []; //  Ensure it's an array
         updatedQuestions.push(card);
 
-        await updateDoc(deckRef, { questions: updatedQuestions }); // ✅ Fix storing as array
-        console.log(`✅ Card added to "${title}".`);
+        await updateDoc(deckRef, { questions: updatedQuestions }); //  Fix storing as array
 
-        fetchDecks(); // 🔥 Refresh decks from Firestore
+        fetchDecks(); //  Refresh decks from Firestore
       }
-    } catch (error) {
-      console.error("❌ Firestore Add Card Error:", error);
-    }
+    } catch (error) {}
   }
+  async function deleteCard(deckTitle, cardIndex) {
+    const user = auth.currentUser;
+    if (!user) return;
 
-  // ✅ Delete a deck
+    try {
+      const deckRef = doc(db, "users", user.uid, "decks", deckTitle);
+      const deckSnapshot = await getDoc(deckRef);
+
+      if (deckSnapshot.exists()) {
+        let deckData = deckSnapshot.data();
+        let updatedQuestions = deckData.questions || [];
+
+        if (cardIndex >= 0 && cardIndex < updatedQuestions.length) {
+          updatedQuestions.splice(cardIndex, 1); // Remove the card at the given index
+        }
+
+        await updateDoc(deckRef, { questions: updatedQuestions });
+        fetchDecks(); // Refresh UI
+      }
+    } catch (error) {}
+  }
+  // Delete a deck
   async function deleteDeck(title) {
     if (!user) {
-      console.log("🚨 No user logged in! Cannot delete deck.");
       return;
     }
 
     try {
-      console.log(`🗑 Deleting deck: ${title}`);
-
       const deckRef = doc(db, "users", user.uid, "decks", title);
       await deleteDoc(deckRef);
 
-      console.log(`✅ Deck "${title}" deleted successfully.`);
-      fetchDecks(); // 🔥 Refresh decks from Firestore
-    } catch (error) {
-      console.error("❌ Firestore Delete Deck Error:", error);
-    }
+      fetchDecks(); //  Refresh decks from Firestore
+    } catch (error) {}
   }
 
   return (
     <DeckContext.Provider
-      value={{ decks, addDeck, addCardToDeck, deleteDeck, fetchDecks }}
+      value={{
+        decks,
+        addDeck,
+        addCardToDeck,
+        deleteDeck,
+        deleteCard,
+        fetchDecks,
+      }}
     >
       {children}
     </DeckContext.Provider>

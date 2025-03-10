@@ -14,11 +14,11 @@ export default function AuthScreen() {
   const { signUp, signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isSignUp, setIsSignUp] = useState(false); // Toggle between sign-in and sign-up
+  const [isSignUp, setIsSignUp] = useState(false);
 
   const handleAuth = async () => {
     if (!email || !password) {
-      Alert.alert("Error", "Please enter an email and password.");
+      Alert.alert("Error", "Please enter both email and password.");
       return;
     }
 
@@ -29,8 +29,29 @@ export default function AuthScreen() {
         await signIn(email, password);
       }
     } catch (error) {
-      Alert.alert("Authentication Error", error.message);
+      handleAuthError(error);
     }
+  };
+
+  // Custom function to handle Firebase authentication errors
+  const handleAuthError = (error) => {
+    let message = "An unexpected error occurred. Please try again.";
+
+    if (error.code === "auth/email-already-in-use") {
+      message =
+        "This email is already associated with an account. Try signing in instead.";
+    } else if (error.code === "auth/invalid-email") {
+      message = "Please enter a valid email address.";
+    } else if (error.code === "auth/weak-password") {
+      message = "Your password is too weak. Please use at least 6 characters.";
+    } else if (error.code === "auth/user-not-found") {
+      message =
+        "No account found with this email. Please check your email or sign up.";
+    } else if (error.code === "auth/wrong-password") {
+      message = "Incorrect password. Please try again.";
+    }
+
+    Alert.alert("Authentication Error", message);
   };
 
   return (
