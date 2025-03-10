@@ -2,16 +2,27 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import DeckStackNavigator from "./StackNavigator";
 import AddDeckScreen from "../screens/AddDeckScreen";
 import { Ionicons } from "@expo/vector-icons";
-import { View, StyleSheet, Platform } from "react-native";
+import { Alert } from "react-native";
+import { useAuth } from "../context/AuthContext";
+import AuthScreen from "../screens/AuthScreen";
 
 const Tab = createBottomTabNavigator();
 
 export default function TabNavigator() {
+  const { logOut } = useAuth(); //  Get logout function from AuthContext
+
+  const handleLogout = () => {
+    Alert.alert("Logout", "Are you sure you want to log out?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Log Out", style: "destructive", onPress: logOut },
+    ]);
+  };
+
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarStyle: styles.tabBar, // Apply transparent styling
+        tabBarStyle: styles.tabBar, //  Apply transparent styling
       }}
     >
       <Tab.Screen
@@ -27,13 +38,29 @@ export default function TabNavigator() {
         name="Add Deck"
         component={AddDeckScreen}
         options={{
-          title: "Create a Deck", // ✅ Sets the header title correctly
+          title: "Create a Deck", //  Sets the header title correctly
           headerShown: true,
-          headerStyle: styles.header, // ✅ Apply the copied header style
-          headerTitleAlign: "center", // ✅ Center the title
-          headerTitleStyle: styles.titleText, // ✅ Apply consistent title style
+          headerStyle: styles.header, //  Apply the copied header style
+          headerTitleAlign: "center", //  Center the title
+          headerTitleStyle: styles.titleText, //  Apply consistent title style
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="add-circle-outline" size={size} color={color} />
+          ),
+        }}
+      />
+      {/*  Logout Button Styled Like a Regular Tab */}
+      <Tab.Screen
+        name="Logout"
+        component={AuthScreen} //  No screen, just triggers logout
+        listeners={{
+          tabPress: (e) => {
+            e.preventDefault(); //  Prevent navigation
+            handleLogout(); //  Trigger logout
+          },
+        }}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="log-out-outline" size={size} color="red" />
           ),
         }}
       />
@@ -41,7 +68,7 @@ export default function TabNavigator() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = {
   tabBar: {
     position: "absolute",
     bottom: 0,
@@ -56,7 +83,6 @@ const styles = StyleSheet.create({
     elevation: 5,
     height: 70,
     borderTopWidth: 0,
-    elevation: 0,
   },
   header: {
     backgroundColor: "#E3F2FD", // Matches tab theme
@@ -75,4 +101,4 @@ const styles = StyleSheet.create({
     color: "#007AFF",
     textAlign: "center",
   },
-});
+};

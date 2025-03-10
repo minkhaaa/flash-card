@@ -7,6 +7,7 @@ import AddDeckScreen from "../screens/AddDeckScreen";
 import QuizResultScreen from "../screens/QuizResultScreen";
 import { TouchableOpacity, Text, View, StyleSheet } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import EditDeckScreen from "../screens/EditDeckScreen";
 
 const Stack = createStackNavigator();
 
@@ -15,7 +16,7 @@ export default function StackNavigator() {
     <Stack.Navigator
       screenOptions={({ navigation }) => ({
         headerStyle: styles.header,
-        headerTitleAlign: "center", // ✅ Centers the title
+        headerTitleAlign: "center",
         headerTitle: ({ children }) => (
           <View>
             <Text style={styles.titleText}>{children}</Text>
@@ -62,19 +63,24 @@ export default function StackNavigator() {
         component={QuizResultScreen}
         options={{ title: "Results" }}
       />
+      <Stack.Screen
+        name="EditDeck"
+        component={EditDeckScreen}
+        options={{ title: "Edit Deck" }}
+      />
     </Stack.Navigator>
   );
 }
 
 const styles = StyleSheet.create({
   header: {
-    backgroundColor: "#E3F2FD", // Matches tab theme
-    elevation: 5, // Adds soft shadow effect
+    backgroundColor: "#E3F2FD",
+    elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 3 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    borderBottomLeftRadius: 20, // ✅ Soft rounded corners to match tab bar
+    borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
     height: 120,
   },
@@ -86,6 +92,6 @@ const styles = StyleSheet.create({
   },
   backButton: {
     marginLeft: 15,
-    padding: 10, // ✅ Adds better touch area for UX
+    padding: 10,
   },
 });

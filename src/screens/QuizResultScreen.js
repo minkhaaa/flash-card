@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
+import ActionButton from "../components/ActionButton";
 
 export default function QuizResultScreen({ route, navigation }) {
   const { title, correctCount, totalCount } = route.params;
@@ -16,12 +17,15 @@ export default function QuizResultScreen({ route, navigation }) {
 
       <Text style={styles.percentage}>{percentage}% Score</Text>
 
-      <View style={styles.buttonGroup}>
-        <Button
+      <View style={styles.buttonContainer}>
+        <ActionButton
           title="Restart Quiz"
           onPress={() => navigation.replace("Quiz", { title })}
         />
-        <Button
+      </View>
+      <View style={styles.buttonContainer}>
+        <ActionButton
+          backgroundColor="#FFA726"
           title="Back to Deck"
           onPress={() => {
             navigation.reset({
@@ -40,6 +44,7 @@ export default function QuizResultScreen({ route, navigation }) {
 
 const styles = StyleSheet.create({
   container: {
+    backgroundColor: "#E3F2FD", // Matches app theme
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
@@ -60,8 +65,10 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     color: "green",
   },
-  buttonGroup: {
-    flexDirection: "row",
-    gap: 10,
+  buttonContainer: {
+    marginTop: 12,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
   },
 });

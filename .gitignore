@@ -17,10 +17,16 @@ expo-env.d.ts
 *.key
 *.mobileprovision
 
+# Firebase
+.firebase/
+storage.rules
+firebase.json
+
 # Metro
 .metro-health-check*
+.metro/
 
-# debug
+# Debug
 npm-debug.*
 yarn-debug.*
 yarn-error.*
@@ -29,8 +35,17 @@ yarn-error.*
 .DS_Store
 *.pem
 
-# local env files
+# Local env files
+.env*
 .env*.local
 
-# typescript
+# TypeScript
 *.tsbuildinfo
+
+# IDE-specific files
+.vscode/
+.idea/
+
+# Generated Data Files
+dataconnect/
+dataconnect-generated/

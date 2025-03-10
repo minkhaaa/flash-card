@@ -40,6 +40,13 @@ export default function DeckDetailScreen({ route, navigation }) {
           }}
         />
       </View>
+      <View style={styles.buttonContainer}>
+        <ActionButton
+          title="Edit Deck"
+          onPress={() => navigation.navigate("EditDeck", { title })}
+          backgroundColor="#FFA726"
+        />
+      </View>
     </View>
   );
 }

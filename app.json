@@ -23,6 +23,18 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "5f9243ee-ebd0-40f8-a903-f0574f97c0dd"
+      }
+    },
+    "owner": "minkha",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/5f9243ee-ebd0-40f8-a903-f0574f97c0dd"
     }
   }
 }
